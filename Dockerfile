@@ -4,7 +4,6 @@ FROM composer:2.6 AS builder
 WORKDIR /app
 COPY composer.json composer.lock ./
 COPY app/Ship/composer.json app/Containers/*/composer.json ./
-RUN composer install --no-dev --optimize-autoloader
 
 # ─── Stage 2: runtime (php‑fpm + wkhtmltopdf + PHP extensions) ───────
 FROM php:8.1-fpm-bullseye
