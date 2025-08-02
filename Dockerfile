@@ -2,10 +2,9 @@ FROM php:7.4-apache
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && \
-    apt-get install -y \
+RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
-    libjpeg62-turbo-dev \
+    libjpeg-dev \
     libpng-dev \
     libzip-dev \
     libxml2-dev \
@@ -13,18 +12,8 @@ RUN apt-get update && \
     git \
     curl \
     zip && \
-    docker-php-ext-configure gd \
-        --with-freetype-dir=/usr/include/freetype2 \
-        --with-jpeg-dir=/usr/include && \
-    docker-php-ext-install \
-        pdo \
-        pdo_mysql \
-        mbstring \
-        tokenizer \
-        xml \
-        zip \
-        gd \
-        bcmath && \
+    docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-install pdo pdo_mysql mbstring tokenizer xml zip gd bcmath && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
 RUN a2enmod rewrite
