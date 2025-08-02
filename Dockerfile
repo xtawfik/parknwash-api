@@ -34,8 +34,9 @@ COPY --chown=www-data:www-data . .
 # 4. Copy Nginx configuration
 COPY .coolify/nginx.conf /etc/nginx/sites-available/default
 
-# 5. Fix Laravel file permissions
-RUN chown -R www-data:www-data storage bootstrap/cache \
+# 5. Fix Laravel file permissions and create directories
+RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views \
+ && chown -R www-data:www-data storage bootstrap/cache \
  && chmod -R 775 storage bootstrap/cache
 
 # 6. Create storage symlink if it doesn't exist
