@@ -16,7 +16,7 @@ RUN chown -R www-data:www-data storage bootstrap/cache \
  && chmod -R 775 storage bootstrap/cache
 
 # 6. Expose FPM port for Coolify
-EXPOSE 9000
+EXPOSE 80
 
 # 7. Run as non-root user
 USER www-data
