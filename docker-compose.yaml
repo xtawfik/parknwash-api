@@ -9,48 +9,24 @@ services:
     container_name: parknwash-api
     restart: unless-stopped
     ports:
-      - "80:80"
+      - "8080:80"
     environment:
       - APP_ENV=production
       - APP_DEBUG=false
-      - DB_HOST=${DB_HOST:-mysql}
-      - DB_PORT=${DB_PORT:-3306}
-      - DB_DATABASE=${DB_DATABASE:-parknwash_api}
-      - DB_USERNAME=${DB_USERNAME:-parknwash_user}
-      - DB_PASSWORD=${DB_PASSWORD:-password}
-      - REDIS_HOST=${REDIS_HOST:-redis}
-      - REDIS_PORT=${REDIS_PORT:-6379}
-      - APP_URL=${APP_URL:-http://localhost}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - APP_URL=${APP_URL}
       - APP_KEY=${APP_KEY}
     volumes:
       - ./storage:/var/www/html/storage
       - ./bootstrap/cache:/var/www/html/bootstrap/cache
     networks:
       - parknwash-network
-
-  mysql:
-    image: mysql:8.0
-    container_name: parknwash-mysql
-    restart: unless-stopped
-    environment:
-      MYSQL_DATABASE: ${DB_DATABASE:-parknwash_api}
-      MYSQL_USER: ${DB_USERNAME:-parknwash_user}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-password}
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-password}
-    volumes:
-      - mysql_data:/var/lib/mysql
-    networks:
-      - parknwash-network
-
-  redis:
-    image: redis:7-alpine
-    container_name: parknwash-redis
-    restart: unless-stopped
-    networks:
-      - parknwash-network
-
-volumes:
-  mysql_data:
 
 networks:
   parknwash-network:

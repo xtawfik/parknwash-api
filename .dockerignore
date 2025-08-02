@@ -77,11 +77,11 @@ yarn.lock
 # Docker files (to avoid recursive copying)
 Dockerfile*
 docker-compose*.yml
+docker-compose*.yaml
 .dockerignore
 
 # Coolify files
 .coolifyignore
-coolify.yaml
 
 # Deployment scripts
 deploy.sh 
