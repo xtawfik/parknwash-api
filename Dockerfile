@@ -34,8 +34,9 @@ COPY --chown=www-data:www-data . .
 # 4. Copy Nginx configuration
 COPY .coolify/nginx.conf /etc/nginx/sites-available/default
 
-# 5. Clear large log files and fix permissions
-RUN find storage/logs -name "*.log" -size +10M -delete \
+# 5. Create storage directories and fix permissions
+RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views storage/app/public \
+ && find storage -name "*.log" -size +10M -delete 2>/dev/null || true \
  && chown -R www-data:www-data storage bootstrap/cache \
  && chmod -R 775 storage bootstrap/cache
 
