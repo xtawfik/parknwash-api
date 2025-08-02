@@ -18,8 +18,8 @@ RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
  && docker-php-ext-enable redis
 
 # 3. Install wkhtmltopdf (required by Laravel Snappy / Dompdf)
-RUN wget -qO /tmp/wkhtmltox.deb \
-      https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.bullseye_amd64.deb \
+RUN apt-get update && apt-get install -y curl ca-certificates \
+ && curl -L -o /tmp/wkhtmltox.deb https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.bullseye_amd64.deb \
  && apt-get install -y /tmp/wkhtmltox.deb \
  && rm /tmp/wkhtmltox.deb
 
