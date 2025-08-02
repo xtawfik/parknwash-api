@@ -1,5 +1,10 @@
 FROM php:8.1-apache
 
+# Add labels for better identification
+LABEL maintainer="parknwash-api"
+LABEL version="1.0"
+LABEL description="ParknWash API Laravel Application"
+
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
     git \

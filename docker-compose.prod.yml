@@ -4,7 +4,8 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: ./Dockerfile
+    image: parknwash-api:latest
     container_name: parknwash-api
     restart: unless-stopped
     ports:
