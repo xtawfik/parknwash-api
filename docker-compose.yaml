@@ -30,10 +30,11 @@ services:
       - API_DEBUG=true
       - API_URL=${API_URL}
       - APP_DEBUG=true
+      - NGINX_DOCUMENT_ROOT=/var/www/html/public
+      - NGINX_INDEX_FILE=index.php
     volumes:
       - ./storage:/var/www/html/storage
       - ./bootstrap/cache:/var/www/html/bootstrap/cache
-    user: "33:33"
     networks:
       - parknwash-network
 
