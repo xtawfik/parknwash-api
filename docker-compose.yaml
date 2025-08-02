@@ -19,15 +19,9 @@ services:
       - DB_DATABASE=${DB_DATABASE}
       - DB_USERNAME=${DB_USERNAME}
       - DB_PASSWORD=${DB_PASSWORD}
-      - REDIS_HOST=${REDIS_HOST}
-      - REDIS_PORT=${REDIS_PORT}
-      - AUTORUN_ENABLED=true
-      - AUTORUN_LARAVEL_STORAGE_LINK=true
-      - AUTORUN_LARAVEL_CONFIG_CACHE=true
-      - AUTORUN_LARAVEL_ROUTE_CACHE=true
-      - AUTORUN_LARAVEL_VIEW_CACHE=true
+      - API_URL=${API_URL}
       - API_PREFIX=/
-      - API_DEBUG=true
+      - API_DEBUG=false
     volumes:
       - ./storage:/var/www/html/storage
       - ./bootstrap/cache:/var/www/html/bootstrap/cache
