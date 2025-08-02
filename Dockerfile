@@ -1,21 +1,60 @@
-FROM php:7.4-apache
+FROM php:8.1-apache
 
-# --- Debian Buster is EOL: use archive mirrors so apt works ---
-RUN sed -i -e 's/deb.debian.org/archive.debian.org/g' \
-           -e 's|security.debian.org|archive.debian.org/|g' /etc/apt/sources.list \
-    && echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99no-check-valid-until
-
-# --- OS deps & PHP extensions ---
-RUN apt-get update && apt-get install -y --no-install-recommends \
-        libzip-dev unzip git curl \
-        libpng-dev libjpeg62-turbo-dev libfreetype6-dev \
-        libxml2-dev zip \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_mysql mbstring tokenizer xml zip gd bcmath \
-    && a2enmod rewrite \
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libonig-dev \
+    libxml2-dev \
+    libzip-dev \
+    zip \
+    unzip \
+    libjpeg62-turbo-dev \
+    libfreetype6-dev \
+    libmcrypt-dev \
+    libicu-dev \
+    libmagickwand-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# --- Serve Laravel /public as the docroot ---
+# Install PHP extensions
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd zip intl
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Copy composer files
+COPY composer.json composer.lock ./
+
+# Install dependencies
+RUN composer install --no-dev --optimize-autoloader --no-interaction
+
+# Copy application files
+COPY . .
+
+# Set permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html/storage \
+    && chmod -R 755 /var/www/html/bootstrap/cache
+
+# Configure Apache
+RUN a2enmod rewrite
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' \
-    /etc/apache2/sites-available/*.conf /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
+# Create storage symlink
+RUN php artisan storage:link
+
+# Optimize Laravel
+RUN php artisan config:cache \
+    && php artisan route:cache \
+    && php artisan view:cache
+
+EXPOSE 80
+
+CMD ["apache2-foreground"]
