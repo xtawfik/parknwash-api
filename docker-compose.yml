@@ -8,16 +8,6 @@ services:
     container_name: laravel-app
     restart: unless-stopped
     ports:
-      - "8000:80"
+      - "8088:80"
     volumes:
       - .:/var/www/html
-    environment:
-      APP_ENV: production
-      APP_DEBUG: false
-      APP_KEY: base64:YOUR_APP_KEY_HERE
-      DB_CONNECTION: mysql
-      DB_HOST: your_mysql_host
-      DB_PORT: 3306
-      DB_DATABASE: apiato_db
-      DB_USERNAME: parknwash
-      DB_PASSWORD: UavzM4c9Tq2WjKsX
