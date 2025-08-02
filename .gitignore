@@ -1,0 +1,40 @@
+# Laravel core directories
+/node_modules
+/public/hot
+/public/storage
+/storage/app/public/uploads
+/storage/app/public/tmp
+/storage/framework/cache
+/storage/framework/sessions
+/storage/framework/views
+/storage/logs
+
+# Laravel environment files
+.env
+.env.*
+.phpunit.result.cache
+
+# OS and Editor specific
+.DS_Store
+Thumbs.db
+*.log
+
+# IDE files
+.vscode
+.idea
+
+# Composer and NPM debug files
+yarn.lock
+npm-debug.log
+pnpm-debug.log
+
+# Build artifacts
+/public/mix-manifest.json
+/public/js/*.js
+/public/css/*.css
+
+# Others
+.phpunit.result.cache
+.env.backup
+/storage/debugbar
+/public/_debugbar

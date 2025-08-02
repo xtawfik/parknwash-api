@@ -1,0 +1,29 @@
+<?php
+
+/**
+ * @apiGroup           AccBalanceSheet
+ * @apiName            deleteAccBalanceSheet
+ *
+ * @api                {DELETE} /v1/acc_balance_sheet/:id Endpoint title here..
+ * @apiDescription     Endpoint description here..
+ *
+ * @apiVersion         1.0.0
+ * @apiPermission      none
+ *
+ * @apiParam           {String}  parameters here..
+ *
+ * @apiSuccessExample  {json}  Success-Response:
+ * HTTP/1.1 200 OK
+{
+  // Insert the response of the request here...
+}
+ */
+
+/** @var Route $router */
+$router->delete('acc_balance_sheet/{id}', [
+    'as' => 'api_accbalancesheet_delete_acc_balance_sheet',
+    'uses'  => 'Controller@deleteAccBalanceSheet',
+    'middleware' => [
+      'auth:api',
+    ],
+]);

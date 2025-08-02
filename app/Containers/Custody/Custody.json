@@ -1,0 +1,6 @@
+{
+  "name": "apiato/custody",
+  "description": "Custody Container for apiato.",
+  "require": {
+  }
+}

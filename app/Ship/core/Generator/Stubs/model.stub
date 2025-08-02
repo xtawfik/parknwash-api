@@ -1,0 +1,45 @@
+<?php
+
+namespace App\Containers\{{container-name}}\Models;
+
+use App\Ship\Parents\Models\Model;
+
+#use#
+
+class {{class-name}} extends Model
+{
+    protected $fillable = [
+      #Fillables#
+    ];
+
+    protected $attributes = [
+
+    ];
+
+    protected $hidden = [
+
+    ];
+
+    protected $casts = [
+
+    ];
+
+    protected $appends = [
+
+    ];
+
+    protected $dates = [
+        'created_at',
+        'updated_at',
+        'deleted_at',
+    ];
+
+    /**
+     * A resource key to be used by the the JSON API Serializer responses.
+     */
+    protected $resourceKey = '{{resource-key}}';
+    protected $table = '{{table-name}}';
+
+    #relations#
+}
+
