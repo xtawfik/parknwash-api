@@ -1,4 +1,4 @@
-FROM php:8.1-apache
+FROM php:8.1-fpm
 
 # Add labels for better identification
 LABEL maintainer="parknwash-api"
@@ -37,12 +37,6 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html/storage \
     && chmod -R 755 /var/www/html/bootstrap/cache
 
-# Configure Apache
-RUN a2enmod rewrite
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
-RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
-
 # Create storage symlink if it doesn't exist
 RUN php artisan storage:link || true
 
@@ -53,6 +47,6 @@ RUN if [ -f .env ]; then \
         php artisan view:cache || true; \
     fi
 
-EXPOSE 80
+EXPOSE 9000
 
-CMD ["apache2-foreground"]
+CMD ["php-fpm"]
