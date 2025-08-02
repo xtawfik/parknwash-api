@@ -1,38 +1,47 @@
-# ─── Stage 1: build dependencies & composer-multi-merge ────────────────
-FROM composer:2.6 AS builder
+#########################################################
+#  🎯 Target: PHP‑FPM 8.1 + wkhtmltopdf + Laravel 7     #
+#########################################################
 
-WORKDIR /app
-COPY composer.json composer.lock ./
-COPY app/Ship/composer.json app/Containers/*/composer.json ./
-
-# ─── Stage 2: runtime (php‑fpm + wkhtmltopdf + PHP extensions) ───────
 FROM php:8.1-fpm-bullseye
 
-# Install system deps for wkhtmltopdf and common Laravel libs
-RUN apt-get update && apt-get install -y \
-    libicu-dev libzip-dev libpng-dev libjpeg-dev libfreetype6-dev zlib1g-dev \
-    libxmldom-perl xvfb fontconfig wget \
-  && docker-php-ext-configure gd --with-freetype --with-jpeg \
-  && docker-php-ext-install gd intl opcache zip pdo pdo_mysql \
-  && pecl install redis \
-  && docker-php-ext-enable redis
+# 1. Install system deps for Laravel + wkhtmltopdf
+RUN apt-get update \
+ && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
+      libicu-dev libzip-dev libpng-dev libjpeg-dev libfreetype6-dev zlib1g-dev \
+      libxml2-dev libxrender1 fontconfig wget xvfb \
+ && rm -rf /var/lib/apt/lists/*
 
-# Install wkhtmltopdf manually (from official binary)
-RUN wget -qO /tmp/wk.deb https://github.com/wkhtmltopdf/wkhtmltopdf/releases/download/0.12.6/wkhtmltox_0.12.6-1.bullseye_amd64.deb \
-  && dpkg -i /tmp/wk.deb || apt-get install -f -y \
-  && ln -s /usr/local/bin/wkhtmltopdf /usr/bin/wkhtmltopdf \
-  && rm /tmp/wk.deb
+# 2. Enable PHP extensions: GD, intl, opcache, zip, pdo_mysql; Redis via PECL
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
+ && docker-php-ext-install -j$(nproc) gd intl opcache zip pdo pdo_mysql \
+ && pecl install redis \
+ && docker-php-ext-enable redis
 
-# Disable root
+# 3. Install wkhtmltopdf (required by Laravel Snappy / Dompdf)
+RUN wget -qO /tmp/wkhtmltox.deb \
+      https://github.com/wkhtmltopdf/packaging/releases/download/0.12.6-1/wkhtmltox_0.12.6-1.bullseye_amd64.deb \
+ && apt-get install -y /tmp/wkhtmltox.deb \
+ && rm /tmp/wkhtmltox.deb
+
+# 4. Prepare runtime directory
+WORKDIR /var/www/html
+
+# 5. Copy all files, including existing vendor
+#    This ensures your CI/Dev had already installed PHP libs
+COPY --chown=www-data:www-data . .
+
+# 6. Generate optimized autoloader only if you update code
+RUN composer dump-autoload --optimize --classmap-authoritative
+
+# 7. Fix Laravel file permissions
+RUN chown -R www-data:www-data storage bootstrap/cache \
+ && chmod -R 775 storage bootstrap/cache
+
+# 8. Expose FPM port 9000 for Coolify to proxy to
+EXPOSE 9000
+
+# 9. Run as non‑root user
 USER www-data
 
-WORKDIR /var/www/html
-COPY --from=builder /app/vendor ./vendor
-COPY . .
-
-# fix permissions
-RUN mkdir -p storage bootstrap/cache \
-  && chmod -R 775 storage bootstrap/cache
-
-EXPOSE 9000
+# 10. Start PHP‑FPM
 CMD ["php-fpm"]
