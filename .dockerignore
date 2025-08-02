@@ -44,7 +44,7 @@ coverage
 
 # Dependency directories
 node_modules
-vendor
+# vendor  # Keep vendor folder since it's already included
 
 # Optional npm cache directory
 .npm
