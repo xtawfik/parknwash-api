@@ -12,12 +12,14 @@
 # Laravel environment files
 .env
 .env.*
+.env.backup
+
+# PHPUnit
 .phpunit.result.cache
 
 # OS and Editor specific
 .DS_Store
 Thumbs.db
-*.log
 
 # IDE files
 .vscode
@@ -28,13 +30,11 @@ yarn.lock
 npm-debug.log
 pnpm-debug.log
 
-# Build artifacts
+# Build artifacts (ignore if compiled locally)
 /public/mix-manifest.json
 /public/js/*.js
 /public/css/*.css
 
-# Others
-.phpunit.result.cache
-.env.backup
+# Debugbar
 /storage/debugbar
 /public/_debugbar
