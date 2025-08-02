@@ -1,4 +1,4 @@
-FROM php:8.1-fpm
+FROM serversideup/php:8.1-fpm-nginx
 
 # Add labels for better identification
 LABEL maintainer="parknwash-api"
@@ -47,6 +47,4 @@ RUN if [ -f .env ]; then \
         php artisan view:cache || true; \
     fi
 
-EXPOSE 9000
-
-CMD ["php-fpm"]
+EXPOSE 8080
