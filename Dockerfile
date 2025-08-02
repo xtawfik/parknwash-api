@@ -1,4 +1,4 @@
-FROM serversideup/php:8.1-fpm-nginx
+FROM serversideup/php:8.0-fpm-nginx
 
 # Add labels for better identification
 LABEL maintainer="parknwash-api"

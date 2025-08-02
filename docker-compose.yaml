@@ -32,6 +32,7 @@ services:
     volumes:
       - ./storage:/var/www/html/storage
       - ./bootstrap/cache:/var/www/html/bootstrap/cache
+    user: "33:33"
     networks:
       - parknwash-network
 
