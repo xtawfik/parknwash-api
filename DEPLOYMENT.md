@@ -36,7 +36,9 @@ Make sure your repository contains the following files:
    - **Source**: Git Repository
    - **Repository URL**: Your Git repository URL
    - **Branch**: `main` or your production branch
-   - **Docker Compose File**: `docker-compose.yml`
+   - **Docker Compose File**: `docker-compose.prod.yml` (use this instead of docker-compose.yml)
+
+4. **Important**: Make sure to select "Docker Compose" and NOT "Build Pack" to avoid Nixpacks issues
 
 ### 3. Configure Environment Variables
 
@@ -135,7 +137,12 @@ docker exec -it parknwash-api php artisan migrate --force
 
 ### Common Issues:
 
-1. **Permission Errors**
+1. **Nixpacks Build Error**
+   - **Error**: "php80 has been dropped due to the lack of maintenance"
+   - **Solution**: Make sure you're using "Docker Compose" deployment method, not "Build Pack"
+   - **Alternative**: Use `docker-compose.prod.yml` instead of `docker-compose.yml`
+
+2. **Permission Errors**
    ```bash
    docker exec -it parknwash-api chmod -R 755 storage bootstrap/cache
    docker exec -it parknwash-api chown -R www-data:www-data storage bootstrap/cache
