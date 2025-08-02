@@ -1,25 +1,33 @@
-FROM php:7.4-fpm
+FROM php:7.2-apache
 
-# Install system dependencies
+# Install required PHP extensions
 RUN apt-get update && apt-get install -y \
-    git unzip curl libzip-dev libpng-dev libonig-dev libxml2-dev zip wkhtmltopdf \
-    libjpeg-dev libfreetype6-dev libxrender1 libfontconfig1 \
-    && docker-php-ext-install pdo pdo_mysql mbstring tokenizer zip gd
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libonig-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    git \
+    curl && \
+    docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+
+# Enable Apache Rewrite Module
+RUN a2enmod rewrite
 
 # Set working directory
-WORKDIR /var/www
+WORKDIR /var/www/html
 
-# Install Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-# Copy existing application directory contents
+# Copy app
 COPY . .
 
-# Set permissions (for storage and bootstrap/cache)
-RUN chown -R www-data:www-data /var/www \
-    && chmod -R 775 /var/www/storage /var/www/bootstrap/cache
+# Install Composer dependencies
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
+    composer install --no-dev --optimize-autoloader
 
-# Expose port if needed (only if running PHP directly)
-EXPOSE 9000
+# Permissions
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
-CMD ["php-fpm"]
+# Expose port
+EXPOSE 80
