@@ -46,8 +46,10 @@ RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions sto
     && chmod -R 775 storage bootstrap/cache \
     && chmod 600 storage/oauth-*.key 2>/dev/null || true
 
-# 10. Clear ALL possible caches completely
+# 10. Clear ALL possible caches completely (including bootstrap cache)
 RUN rm -rf bootstrap/cache/*.php || true \
+    && rm -rf bootstrap/cache/packages.php || true \
+    && rm -rf bootstrap/cache/services.php || true \
     && rm -rf storage/framework/cache/* || true \
     && rm -rf storage/framework/views/* || true \
     && rm -rf storage/framework/sessions/* || true
