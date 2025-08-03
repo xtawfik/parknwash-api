@@ -48,7 +48,7 @@ abstract class Transformer extends FractalTransformer {
    *
    * @return \League\Fractal\Resource\Item
    */
-  public function item( $data, $transformer, $resourceKey = null ) {
+  public function item($data, $transformer, ?string $resourceKey = null): \League\Fractal\Resource\Item {
     if ( ! $data ) {
       return null;
     }
