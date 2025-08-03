@@ -34,8 +34,14 @@ services:
       - NGINX_INDEX_FILE=index.php
     volumes:
       - ./bootstrap/cache:/var/www/html/bootstrap/cache
+      # Vendor volume for improved performance (based on Docker + Laravel best practices)
+      - vendor-volume:/var/www/html/vendor
     networks:
       - parknwash-network
+
+volumes:
+  # Named volume for vendor directory - significantly improves performance on Windows/macOS
+  vendor-volume:
 
 networks:
   parknwash-network:
