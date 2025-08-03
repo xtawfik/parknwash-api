@@ -27,45 +27,39 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 # 4. Set working directory
 WORKDIR /var/www/html
 
-# 5. Copy only composer files first (Docker cache optimization)
-COPY composer.json composer.lock ./
-
-# 6. Install Composer dependencies in a cached layer
-RUN composer install --no-dev --no-interaction --no-autoloader --no-scripts --prefer-dist
-
-# 7. Copy application files
+# 5. Copy application files
 COPY --chown=www-data:www-data . .
 
-# 8. Copy Nginx configuration
+# 6. Install Composer dependencies (after files are copied)
+RUN composer install --no-dev --no-interaction --prefer-dist
+
+# 7. Copy Nginx configuration
 COPY .coolify/nginx.conf /etc/nginx/sites-available/default
 
-# 9. Configure PHP-FPM to listen on TCP instead of socket
+# 8. Configure PHP-FPM to listen on TCP instead of socket
 RUN sed -i 's/listen = \/run\/php\/php7.4-fpm.sock/listen = 127.0.0.1:9000/' /usr/local/etc/php-fpm.d/www.conf
 
-# 10. Create storage directories and set permissions
+# 9. Create storage directories and set permissions
 RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views storage/app/public \
     && find storage -name "*.log" -size +10M -delete 2>/dev/null || true \
     && chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache \
     && chmod 600 storage/oauth-*.key 2>/dev/null || true
 
-# 11. Clear ALL possible caches completely
+# 10. Clear ALL possible caches completely
 RUN rm -rf bootstrap/cache/*.php || true \
     && rm -rf storage/framework/cache/* || true \
     && rm -rf storage/framework/views/* || true \
     && rm -rf storage/framework/sessions/* || true
 
-# 12. Complete Composer installation with authoritative classmap (CRITICAL FIX)
-RUN composer install --no-dev --optimize-autoloader --classmap-authoritative
+# 11. Optimize Composer autoloader with authoritative classmap (CRITICAL FIX)
+RUN composer dump-autoload --no-dev --optimize --classmap-authoritative
 
-# 13. Laravel setup commands
+# 12. Laravel setup commands
 RUN php artisan storage:link || true \
     && php artisan passport:keys --force || true
 
-# 14. Final optimized autoloader regeneration (CRITICAL FIX)
-RUN composer dump-autoload --no-dev --optimize --classmap-authoritative
-
-# 15. Create comprehensive startup script
+# 13. Create comprehensive startup script
 RUN echo '#!/bin/bash' > /startup.sh \
     && echo 'set -e' >> /startup.sh \
     && echo '' >> /startup.sh \
@@ -106,8 +100,8 @@ RUN echo '#!/bin/bash' > /startup.sh \
     && echo 'nginx -g "daemon off;"' >> /startup.sh \
     && chmod +x /startup.sh
 
-# 16. Expose port
+# 14. Expose port
 EXPOSE 80
 
-# 17. Use the comprehensive startup script
+# 15. Use the comprehensive startup script
 CMD ["/startup.sh"]
