@@ -46,13 +46,18 @@ RUN php artisan config:clear || true \
 
 # 7. Create storage symlink and setup Passport keys
 RUN php artisan storage:link || true \
- && php artisan passport:keys --force || true
+ && php artisan passport:keys --force || true \
+ && rm -rf bootstrap/cache/*.php || true \
+ && rm -rf storage/framework/cache/* || true \
+ && rm -rf storage/framework/views/* || true \
+ && composer dump-autoload --optimize || true
 
 # 8. Create a startup script that ensures permissions
 RUN echo '#!/bin/bash' > /ensure-permissions.sh \
  && echo 'mkdir -p /var/www/html/storage/logs /var/www/html/storage/framework/cache /var/www/html/storage/framework/sessions /var/www/html/storage/framework/views' >> /ensure-permissions.sh \
  && echo 'chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache' >> /ensure-permissions.sh \
  && echo 'chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache' >> /ensure-permissions.sh \
+ && echo 'if command -v composer &> /dev/null; then composer dump-autoload --optimize || true; fi' >> /ensure-permissions.sh \
  && chmod +x /ensure-permissions.sh
 
 # 9. Expose port 80 for Nginx
