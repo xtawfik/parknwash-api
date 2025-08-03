@@ -48,7 +48,7 @@ abstract class Transformer extends FractalTransformer {
    *
    * @return \League\Fractal\Resource\Item
    */
-  public function item($data, $transformer, ?string $resourceKey = null): \League\Fractal\Resource\Item {
+  public function item($data, $transformer, $resourceKey = null) {
     if ( ! $data ) {
       return null;
     }
@@ -68,7 +68,7 @@ abstract class Transformer extends FractalTransformer {
    *
    * @return \League\Fractal\Resource\Collection
    */
-  public function collection( $data, $transformer, ?string $resourceKey = null): \League\Fractal\Resource\Collection {
+  public function collection( $data, $transformer, $resourceKey = null ) {
     // set a default resource key if none is set
     if ( ! $resourceKey && $data->isNotEmpty() ) {
       $resourceKey = (string) $data->modelKeys()[0];
