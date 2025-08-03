@@ -52,7 +52,9 @@ RUN rm -rf bootstrap/cache/*.php || true \
     && rm -rf bootstrap/cache/services.php || true \
     && rm -rf storage/framework/cache/* || true \
     && rm -rf storage/framework/views/* || true \
-    && rm -rf storage/framework/sessions/* || true
+    && rm -rf storage/framework/sessions/* || true \
+    && rm -rf vendor/composer/autoload_classmap.php || true \
+    && rm -rf vendor/composer/autoload_static.php || true
 
 # 11. Remove dev dependencies properly and regenerate autoloader
 RUN composer install --no-dev --no-interaction --no-scripts --optimize-autoloader --classmap-authoritative \
@@ -63,7 +65,7 @@ RUN php artisan storage:link || true \
     && php artisan passport:keys --force || true
 
 # 13. Final autoloader optimization after all setup
-RUN composer dump-autoload --no-dev --optimize --classmap-authoritative || true
+RUN composer dump-autoload --no-dev --optimize --classmap-authoritative --clear-cache || true
 
 # 14. Create comprehensive startup script
 RUN echo '#!/bin/bash' > /startup.sh \
@@ -87,6 +89,8 @@ RUN echo '#!/bin/bash' > /startup.sh \
     && echo 'rm -rf /var/www/html/bootstrap/cache/*.php || true' >> /startup.sh \
     && echo 'rm -rf /var/www/html/storage/framework/cache/* || true' >> /startup.sh \
     && echo 'rm -rf /var/www/html/storage/framework/views/* || true' >> /startup.sh \
+    && echo 'rm -rf /var/www/html/vendor/composer/autoload_classmap.php || true' >> /startup.sh \
+    && echo 'rm -rf /var/www/html/vendor/composer/autoload_static.php || true' >> /startup.sh \
     && echo '' >> /startup.sh \
     && echo '# Regenerate optimized autoloader to fix User class conflicts' >> /startup.sh \
     && echo 'echo "🔄 Regenerating optimized autoloader..."' >> /startup.sh \
