@@ -67,7 +67,11 @@ RUN php artisan storage:link || true \
 # 13. Final autoloader optimization after all setup
 RUN composer dump-autoload --no-dev --optimize --classmap-authoritative --clear-cache || true
 
-# 14. Create comprehensive startup script
+# 14. Disable opcache during development to prevent cached class conflicts
+RUN echo "opcache.enable=0" >> /usr/local/etc/php/conf.d/opcache.ini || true \
+    && echo "opcache.enable_cli=0" >> /usr/local/etc/php/conf.d/opcache.ini || true
+
+# 15. Create comprehensive startup script
 RUN echo '#!/bin/bash' > /startup.sh \
     && echo 'set -e' >> /startup.sh \
     && echo '' >> /startup.sh \
@@ -91,6 +95,10 @@ RUN echo '#!/bin/bash' > /startup.sh \
     && echo 'rm -rf /var/www/html/storage/framework/views/* || true' >> /startup.sh \
     && echo 'rm -rf /var/www/html/vendor/composer/autoload_classmap.php || true' >> /startup.sh \
     && echo 'rm -rf /var/www/html/vendor/composer/autoload_static.php || true' >> /startup.sh \
+    && echo '' >> /startup.sh \
+    && echo '# Clear opcache to prevent stale class definitions' >> /startup.sh \
+    && echo 'echo "🗑️  Clearing opcache..."' >> /startup.sh \
+    && echo 'php -r "if (function_exists('"'"'opcache_reset'"'"')) opcache_reset();" || true' >> /startup.sh \
     && echo '' >> /startup.sh \
     && echo '# Regenerate optimized autoloader to fix User class conflicts' >> /startup.sh \
     && echo 'echo "🔄 Regenerating optimized autoloader..."' >> /startup.sh \
