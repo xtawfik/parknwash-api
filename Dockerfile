@@ -30,8 +30,8 @@ WORKDIR /var/www/html
 # 5. Copy application files
 COPY --chown=www-data:www-data . .
 
-# 6. Install Composer dependencies (after files are copied)
-RUN composer install --no-dev --no-interaction --prefer-dist
+# 6. Install Composer dependencies with dev first, then remove dev properly
+RUN composer install --no-interaction --prefer-dist --no-scripts
 
 # 7. Copy Nginx configuration
 COPY .coolify/nginx.conf /etc/nginx/sites-available/default
@@ -52,8 +52,8 @@ RUN rm -rf bootstrap/cache/*.php || true \
     && rm -rf storage/framework/views/* || true \
     && rm -rf storage/framework/sessions/* || true
 
-# 11. Optimize Composer autoloader with authoritative classmap (CRITICAL FIX)
-RUN composer dump-autoload --no-dev --optimize --classmap-authoritative
+# 11. Remove dev dependencies properly and regenerate autoloader
+RUN composer install --no-dev --no-interaction --optimize-autoloader --classmap-authoritative
 
 # 12. Laravel setup commands
 RUN php artisan storage:link || true \
