@@ -44,11 +44,11 @@ abstract class Transformer extends FractalTransformer {
   /**
    * @param mixed $data
    * @param callable|FractalTransformer $transformer
-   * @param null $resourceKey
+   * @param string|null $resourceKey
    *
    * @return \League\Fractal\Resource\Item
    */
-  public function item( $data, $transformer, $resourceKey = null ) {
+  public function item( $data, $transformer, ?string $resourceKey = null ) {
     if ( ! $data ) {
       return null;
     }
@@ -64,11 +64,11 @@ abstract class Transformer extends FractalTransformer {
   /**
    * @param mixed $data
    * @param callable|FractalTransformer $transformer
-   * @param null $resourceKey
+   * @param string|null $resourceKey
    *
    * @return \League\Fractal\Resource\Collection
    */
-  public function collection( $data, $transformer, $resourceKey = null ) {
+  public function collection( $data, $transformer, ?string $resourceKey = null ) {
     // set a default resource key if none is set
     if ( ! $resourceKey && $data->isNotEmpty() ) {
       $resourceKey = (string) $data->modelKeys()[0];
