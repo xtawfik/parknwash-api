@@ -34,11 +34,14 @@ COPY --chown=www-data:www-data . .
 # 4. Copy Nginx configuration
 COPY .coolify/nginx.conf /etc/nginx/sites-available/default
 
-# 5. Create storage directories and fix permissions
+# 5. Create storage directories and copy OAuth keys
 RUN mkdir -p storage/logs storage/framework/cache storage/framework/sessions storage/framework/views storage/app/public \
  && find storage -name "*.log" -size +10M -delete 2>/dev/null || true \
+ && cp storage/oauth-public.key storage/oauth-public.key.backup 2>/dev/null || true \
+ && cp storage/oauth-private.key storage/oauth-private.key.backup 2>/dev/null || true \
  && chown -R www-data:www-data storage bootstrap/cache \
- && chmod -R 775 storage bootstrap/cache
+ && chmod -R 775 storage bootstrap/cache \
+ && chmod 600 storage/oauth-*.key 2>/dev/null || true
 
 # 6. Create storage symlink if it doesn't exist
 RUN php artisan storage:link || true
