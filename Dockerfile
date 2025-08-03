@@ -1,4 +1,4 @@
-FROM php:7.4-fpm
+FROM php:7.2-fpm
 
 # 1. Install system dependencies and Nginx
 RUN apt-get update && apt-get install -y \
