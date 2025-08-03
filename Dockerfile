@@ -79,6 +79,19 @@ echo "🔗 Creating storage symlink..."
 cd /var/www/html
 php artisan storage:link || echo "⚠️  Storage symlink already exists"
 
+# Ensure OAuth keys are properly set up
+echo "🔑 Setting up OAuth keys..."
+if [ ! -f "storage/oauth-private.key" ] || [ ! -f "storage/oauth-public.key" ]; then
+    echo "🔑 Generating new OAuth keys..."
+    php artisan passport:keys --force
+else
+    echo "✅ OAuth keys found, using existing keys"
+fi
+
+# Fix OAuth key permissions
+chmod 600 storage/oauth-*.key 2>/dev/null || true
+chown www-data:www-data storage/oauth-*.key 2>/dev/null || true
+
 # Start PHP-FPM in background
 php-fpm &
 
