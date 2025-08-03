@@ -53,13 +53,17 @@ RUN rm -rf bootstrap/cache/*.php || true \
     && rm -rf storage/framework/sessions/* || true
 
 # 11. Remove dev dependencies properly and regenerate autoloader
-RUN composer install --no-dev --no-interaction --optimize-autoloader --classmap-authoritative
+RUN composer install --no-dev --no-interaction --no-scripts --optimize-autoloader --classmap-authoritative \
+    && php artisan package:discover --ansi || true
 
 # 12. Laravel setup commands
 RUN php artisan storage:link || true \
     && php artisan passport:keys --force || true
 
-# 13. Create comprehensive startup script
+# 13. Final autoloader optimization after all setup
+RUN composer dump-autoload --no-dev --optimize --classmap-authoritative || true
+
+# 14. Create comprehensive startup script
 RUN echo '#!/bin/bash' > /startup.sh \
     && echo 'set -e' >> /startup.sh \
     && echo '' >> /startup.sh \
@@ -100,8 +104,8 @@ RUN echo '#!/bin/bash' > /startup.sh \
     && echo 'nginx -g "daemon off;"' >> /startup.sh \
     && chmod +x /startup.sh
 
-# 14. Expose port
+# 15. Expose port
 EXPOSE 80
 
-# 15. Use the comprehensive startup script
+# 16. Use the comprehensive startup script
 CMD ["/startup.sh"]

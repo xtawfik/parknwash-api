@@ -380,7 +380,7 @@ trait TestsRequestHelperTrait
      */
     private function logResponseData($httpResponse)
     {
-        $responseLoggerEnabled = Config::get('debugger.tests.response_logger');
+        $responseLoggerEnabled = Config::get('debugger.tests.response_logger', false);
 
         if($responseLoggerEnabled){
             Log::notice(get_object_vars($httpResponse->getData()));
