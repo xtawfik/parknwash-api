@@ -74,7 +74,7 @@ class UserPrivateProfileTransformer extends Transformer {
         $response = $this->withMedia( $employee, $response, "image" );
 
         // Mall location
-        if($user->mall_id) {
+        if($user->mall_id && $user->mall) {
           $response['mall_id'] = $user->mall_id;
           $response['mall'] = $user->mall;
           $response['mall_location'] = $user->mall->boundaries;
