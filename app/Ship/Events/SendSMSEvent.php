@@ -68,6 +68,29 @@ class SendSMSEvent extends Event implements ShouldQueue {
       ] );
     }
 
+    /**
+     * KWT SMS Provider API
+     */
+    if($provider == "KWT") {
+      // Clean mobile number - remove + and ensure it starts with country code
+      $cleanMobile = preg_replace('/[^0-9]/', '', $mobile);
+      
+      $client->post( 'https://www.kwtsms.com/API/send/', [
+        'form_params' => [
+          'username' => config('sms.username'),
+          'password' => config('sms.password'),
+          'sender'   => config('sms.sender'),
+          'mobile'   => $cleanMobile,
+          'lang'     => config('sms.lang', '1'),
+          'test'     => config('sms.test_mode', '0'),
+          'message'  => $message
+        ],
+        'headers' => [
+          'Content-Type' => 'application/x-www-form-urlencoded'
+        ]
+      ] );
+    }
+
 
 
 

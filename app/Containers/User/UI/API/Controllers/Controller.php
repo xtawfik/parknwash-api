@@ -199,8 +199,8 @@ class Controller extends ApiController
   public function sendOtpCode()
   {
     // Configuration variables
-    $is_testing = true; // Set to false for production
-    $allow_sms_sending = false; // Set to true to enable SMS sending
+    $is_testing = false; // Set to false for production
+    $allow_sms_sending = true; // Set to true to enable SMS sending
     $test_numbers = ["55544433", "94034531", "90039986"];
     
     // Get phone from request
